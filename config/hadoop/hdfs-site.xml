@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<configuration>
+    <property>
+        <name>dfs.replication</name>
+        <value>1</value>
+        <description>Block replication factor</description>
+    </property>
+    
+    <property>
+        <name>dfs.namenode.name.dir</name>
+        <value>file:///hadoop/dfs/name</value>
+        <description>NameNode directory for namespace and transaction logs storage</description>
+    </property>
+    
+    <property>
+        <name>dfs.datanode.data.dir</name>
+        <value>file:///hadoop/dfs/data</value>
+        <description>DataNode directory for storing blocks</description>
+    </property>
+    
+    <property>
+        <name>dfs.permissions.enabled</name>
+        <value>false</value>
+        <description>Disable HDFS permissions for simplicity</description>
+    </property>
+    
+    <property>
+        <name>dfs.webhdfs.enabled</name>
+        <value>true</value>
+        <description>Enable WebHDFS REST API</description>
+    </property>
+    
+    <property>
+        <name>dfs.namenode.datanode.registration.ip-hostname-check</name>
+        <value>false</value>
+        <description>Disable IP-hostname check for Docker</description>
+    </property>
+</configuration>
+

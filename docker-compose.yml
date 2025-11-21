@@ -1,0 +1,112 @@
+version: '3.8'
+
+services:
+  # Hadoop NameNode
+  namenode:
+    image: bde2020/hadoop-namenode:2.0.0-hadoop3.2.1-java8
+    container_name: namenode
+    restart: always
+    ports:
+      - "9870:9870"  # Web UI
+      - "9000:9000"  # HDFS port
+    volumes:
+      - hadoop_namenode:/hadoop/dfs/name
+      - ./config/hadoop:/etc/hadoop/conf
+    environment:
+      - CLUSTER_NAME=hibench
+      - CORE_CONF_fs_defaultFS=hdfs://namenode:9000
+      - CORE_CONF_hadoop_http_staticuser_user=root
+      - HDFS_CONF_dfs_namenode_datanode_registration_ip___hostname___check=false
+      - HDFS_CONF_dfs_permissions_enabled=false
+      - HDFS_CONF_dfs_webhdfs_enabled=true
+      - HDFS_CONF_dfs_replication=1
+    networks:
+      - hibench-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9870"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Hadoop DataNode
+  datanode:
+    image: bde2020/hadoop-datanode:2.0.0-hadoop3.2.1-java8
+    container_name: datanode
+    restart: always
+    volumes:
+      - hadoop_datanode:/hadoop/dfs/data
+      - ./config/hadoop:/etc/hadoop/conf
+    environment:
+      - SERVICE_PRECONDITION=namenode:9870
+      - CORE_CONF_fs_defaultFS=hdfs://namenode:9000
+      - HDFS_CONF_dfs_datanode_data_dir=file:///hadoop/dfs/data
+    depends_on:
+      - namenode
+    networks:
+      - hibench-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://namenode:9870"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Spark Master
+  spark-master:
+    image: bde2020/spark-master:3.1.1-hadoop3.2
+    container_name: spark-master
+    restart: always
+    ports:
+      - "8080:8080"  # Spark Master Web UI
+      - "7077:7077"  # Spark Master port
+      - "4040:4040"  # Spark Application UI
+    volumes:
+      - ./config/spark:/spark/conf
+      - ./data:/data
+      - ./hibench-workspace:/hibench
+    environment:
+      - INIT_DAEMON_STEP=setup_spark
+      - SPARK_MASTER_HOST=spark-master
+      - SPARK_MASTER_PORT=7077
+      - SPARK_MASTER_WEBUI_PORT=8080
+      - CORE_CONF_fs_defaultFS=hdfs://namenode:9000
+    depends_on:
+      - namenode
+      - datanode
+    networks:
+      - hibench-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Spark Worker
+  spark-worker:
+    image: bde2020/spark-worker:3.1.1-hadoop3.2
+    container_name: spark-worker
+    restart: always
+    ports:
+      - "8081:8081"  # Spark Worker Web UI
+    volumes:
+      - ./config/spark:/spark/conf
+      - ./data:/data
+      - ./hibench-workspace:/hibench
+    environment:
+      - SPARK_MASTER=spark://spark-master:7077
+      - SPARK_WORKER_CORES=2
+      - SPARK_WORKER_MEMORY=2g
+      - SPARK_WORKER_WEBUI_PORT=8081
+      - CORE_CONF_fs_defaultFS=hdfs://namenode:9000
+    depends_on:
+      - spark-master
+    networks:
+      - hibench-net
+
+volumes:
+  hadoop_namenode:
+  hadoop_datanode:
+
+networks:
+  hibench-net:
+    driver: bridge
+

@@ -1,0 +1,59 @@
+# Docker volumes
+hadoop_namenode/
+hadoop_datanode/
+
+# Data directories
+data/*
+!data/.gitkeep
+
+# HiBench reports
+hibench-workspace/report/
+*.report
+
+# Logs
+*.log
+logs/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# MacOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+
+# Thumbnails
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+tmp/
+temp/
+
+# Backup files
+*.bak
+*.backup
+
+# Environment variables (nếu có sensitive data)
+# .env
+
+# Build artifacts
+target/
+*.class
+*.jar
+*.war
+
+# Test results
+test-results/
+debug_logs.txt
+status.txt
+check.txt
+containers.txt
+
