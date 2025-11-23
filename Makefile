@@ -1,5 +1,5 @@
-# Makefile cho HiBench Hadoop & Spark Setup
-# Sử dụng: make <command>
+# Makefile for HiBench Hadoop & Spark Setup
+# Usage: make <command>
 
 .PHONY: help setup start stop restart status logs clean check build shell-spark shell-hadoop test
 
@@ -10,21 +10,21 @@ help:
 	@echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 	@echo ""
 	@echo "📦 Setup Commands:"
-	@echo "  make setup        - Khởi tạo và start toàn bộ (lần đầu)"
-	@echo "  make start        - Start các containers"
-	@echo "  make stop         - Stop các containers"
-	@echo "  make restart      - Restart tất cả"
-	@echo "  make clean        - Dừng và xóa hết (bao gồm volumes)"
+	@echo "  make setup        - Initialize and start everything (first time)"
+	@echo "  make start        - Start containers"
+	@echo "  make stop         - Stop containers"
+	@echo "  make restart      - Restart all"
+	@echo "  make clean        - Stop and remove everything (including volumes)"
 	@echo ""
 	@echo "📊 Monitoring:"
-	@echo "  make status       - Xem trạng thái containers"
-	@echo "  make logs         - Xem logs của tất cả services"
-	@echo "  make check        - Kiểm tra health của services"
+	@echo "  make status       - View container status"
+	@echo "  make logs         - View logs of all services"
+	@echo "  make check        - Check health of services"
 	@echo ""
 	@echo "🔧 Development:"
-	@echo "  make shell-spark  - Vào shell của Spark Master"
-	@echo "  make shell-hadoop - Vào shell của Hadoop NameNode"
-	@echo "  make test         - Chạy test benchmark (WordCount)"
+	@echo "  make shell-spark  - Enter Spark Master shell"
+	@echo "  make shell-hadoop - Enter Hadoop NameNode shell"
+	@echo "  make test         - Run benchmark test (WordCount)"
 	@echo ""
 	@echo "🌐 Web UIs:"
 	@echo "  - Hadoop:  http://localhost:9870"
@@ -32,22 +32,22 @@ help:
 	@echo "  - Worker:  http://localhost:8081"
 	@echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
-# Kiểm tra Docker có chạy không
+# Check if Docker is running
 check:
-	@echo "🔍 Kiểm tra Docker..."
-	@docker info > /dev/null 2>&1 || (echo "❌ Docker chưa chạy!" && exit 1)
+	@echo "🔍 Checking Docker..."
+	@docker info > /dev/null 2>&1 || (echo "❌ Docker is not running!" && exit 1)
 	@echo "✅ Docker OK"
 	@echo ""
-	@echo "🔍 Kiểm tra Docker Compose..."
-	@which docker-compose > /dev/null || (echo "❌ Docker Compose chưa cài!" && exit 1)
+	@echo "🔍 Checking Docker Compose..."
+	@which docker-compose > /dev/null || (echo "❌ Docker Compose is not installed!" && exit 1)
 	@echo "✅ Docker Compose OK"
 
-# Setup ban đầu (build + start + init)
+# Initial setup (build + start + init)
 setup: check
-	@echo "🚀 Bắt đầu setup HiBench environment..."
+	@echo "🚀 Starting HiBench environment setup..."
 	@./scripts/setup.sh
 
-# Build images (nếu cần)
+# Build images (if needed)
 build:
 	@echo "🔨 Building Docker images..."
 	docker-compose build
@@ -65,21 +65,21 @@ stop:
 	@echo "⏹️  Stopping containers..."
 	@./scripts/stop.sh
 
-# Restart tất cả
+# Restart all
 restart:
 	@echo "🔄 Restarting all services..."
 	docker-compose restart
 	@echo "✅ Services restarted!"
 
-# Xem status
+# View status
 status:
 	@./scripts/status.sh
 
-# Xem logs
+# View logs
 logs:
 	docker-compose logs -f
 
-# Logs của từng service
+# Logs for each service
 logs-spark:
 	docker-compose logs -f spark-master
 
@@ -89,22 +89,22 @@ logs-hadoop:
 logs-worker:
 	docker-compose logs -f spark-worker
 
-# Vào shell của Spark Master
+# Enter Spark Master shell
 shell-spark:
 	@echo "🐚 Connecting to Spark Master shell..."
 	@echo "Tip: HiBench directory: /opt/hibench"
 	@echo "Tip: Config files: /hibench/"
 	docker exec -it spark-master bash
 
-# Vào shell của Hadoop NameNode
+# Enter Hadoop NameNode shell
 shell-hadoop:
 	@echo "🐚 Connecting to Hadoop NameNode shell..."
 	docker exec -it namenode bash
 
-# Clean up (xóa hết bao gồm volumes)
+# Clean up (remove everything including volumes)
 clean:
 	@echo "🧹 Cleaning up everything..."
-	@read -p "⚠️  Xóa tất cả bao gồm dữ liệu HDFS? [y/N] " -n 1 -r; \
+	@read -p "⚠️  Remove everything including HDFS data? [y/N] " -n 1 -r; \
 	echo; \
 	if [[ $$REPLY =~ ^[Yy]$$ ]]; then \
 		docker-compose down -v; \
@@ -113,7 +113,7 @@ clean:
 		echo "❌ Cancelled"; \
 	fi
 
-# Test với WordCount benchmark
+# Test with WordCount benchmark
 test:
 	@echo "🧪 Running WordCount benchmark test..."
 	docker exec -it spark-master bash -c "cd /opt/hibench && \
@@ -122,7 +122,7 @@ test:
 		bin/workloads/micro/wordcount/spark/run.sh && \
 		cat report/hibench.report"
 
-# Quick test (chỉ check connectivity)
+# Quick test (only check connectivity)
 test-quick:
 	@echo "⚡ Quick connectivity test..."
 	@echo "Testing HDFS..."
@@ -143,7 +143,7 @@ init-hdfs:
 		hdfs dfs -chmod -R 777 /user"
 	@echo "✅ HDFS initialized!"
 
-# Xem HDFS
+# View HDFS
 hdfs-ls:
 	docker exec namenode hdfs dfs -ls /
 
@@ -151,7 +151,7 @@ hdfs-ls:
 hdfs-report:
 	docker exec namenode hdfs dfsadmin -report
 
-# Clean HDFS data (giữ containers)
+# Clean HDFS data (keep containers)
 hdfs-clean:
 	@echo "🗑️  Cleaning HiBench data on HDFS..."
 	docker exec namenode hdfs dfs -rm -r -f /HiBench/* || true

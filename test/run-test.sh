@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Script test HDFS + Spark integration
-# Không liên quan đến HiBench
+# Script to test HDFS + Spark integration
+# Not related to HiBench
 
 set -e
 
@@ -10,59 +10,59 @@ echo "  🧪 TEST HDFS + SPARK INTEGRATION"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 
-# Kiểm tra containers
-echo "1️⃣  Kiểm tra containers..."
+# Check containers
+echo "1️⃣  Checking containers..."
 if ! docker ps | grep -q "spark-master"; then
-    echo "❌ Spark Master không chạy!"
-    echo "   Chạy: make start"
+    echo "❌ Spark Master is not running!"
+    echo "   Run: make start"
     exit 1
 fi
 
 if ! docker ps | grep -q "namenode"; then
-    echo "❌ Hadoop NameNode không chạy!"
-    echo "   Chạy: make start"
+    echo "❌ Hadoop NameNode is not running!"
+    echo "   Run: make start"
     exit 1
 fi
 
-echo "✅ Tất cả containers đang chạy"
+echo "✅ All containers are running"
 echo ""
 
-# Tạo thư mục test trên HDFS
-echo "2️⃣  Tạo thư mục /test/ trên HDFS..."
+# Create test directory on HDFS
+echo "2️⃣  Creating /test/ directory on HDFS..."
 docker exec namenode hdfs dfs -mkdir -p /test 2>/dev/null || true
 docker exec namenode hdfs dfs -chmod 777 /test
-echo "✅ Thư mục đã sẵn sàng"
+echo "✅ Directory is ready"
 echo ""
 
-# Upload file test lên HDFS
-echo "3️⃣  Upload file test lên HDFS..."
+# Upload test file to HDFS
+echo "3️⃣  Uploading test file to HDFS..."
 echo "   - File: sample-data.txt"
 echo "   - Destination: hdfs://namenode:9000/test/"
 
-# Copy file vào container trước
+# Copy file to container first
 docker cp test/sample-data.txt namenode:/tmp/sample-data.txt
 
-# Upload lên HDFS
+# Upload to HDFS
 docker exec namenode hdfs dfs -put -f /tmp/sample-data.txt /test/
 
-# Kiểm tra file đã upload
+# Check if file has been uploaded
 echo ""
-echo "   📁 Kiểm tra file trên HDFS:"
+echo "   📁 Checking file on HDFS:"
 docker exec namenode hdfs dfs -ls /test/
 echo ""
 
 FILE_SIZE=$(docker exec namenode hdfs dfs -du -h /test/sample-data.txt | awk '{print $1" "$2}')
-echo "   ✅ File đã upload thành công! (Size: $FILE_SIZE)"
+echo "   ✅ File uploaded successfully! (Size: $FILE_SIZE)"
 echo ""
 
-# Copy Python script vào Spark container
-echo "4️⃣  Chuẩn bị Spark job..."
+# Copy Python script to Spark container
+echo "4️⃣  Preparing Spark job..."
 docker cp test/test-hdfs-spark.py spark-master:/tmp/test-hdfs-spark.py
-echo "✅ Script đã sẵn sàng"
+echo "✅ Script is ready"
 echo ""
 
-# Chạy Spark job
-echo "5️⃣  Chạy Spark job để đọc và phân tích file..."
+# Run Spark job
+echo "5️⃣  Running Spark job to read and analyze file..."
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
@@ -76,14 +76,14 @@ docker exec spark-master spark-submit \
 
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
-echo "🎉 Test hoàn tất!"
+echo "🎉 Test complete!"
 echo ""
-echo "📊 Bạn có thể xem thêm:"
+echo "📊 You can view:"
 echo "   - Spark Master UI:  http://localhost:8080"
 echo "   - Spark App UI:     http://localhost:4040"
 echo "   - Hadoop HDFS UI:   http://localhost:9870"
 echo ""
-echo "🧹 Để dọn dẹp test data:"
+echo "🧹 To clean up test data:"
 echo "   docker exec namenode hdfs dfs -rm -r /test"
 echo ""
 

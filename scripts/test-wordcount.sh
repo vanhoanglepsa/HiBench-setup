@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Script test nhanh WordCount benchmark
-# Chạy script này để verify setup hoạt động đúng
+# Quick WordCount benchmark test script
+# Run this script to verify setup is working correctly
 
 set -e
 
@@ -9,7 +9,7 @@ echo "🧪 Running WordCount Benchmark Test..."
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 
-# Kiểm tra container có chạy không
+# Check if containers are running
 echo "1️⃣  Checking containers..."
 if ! docker ps | grep -q "spark-master"; then
     echo "❌ Spark Master container not running!"

@@ -1,5 +1,5 @@
 // HiBench WordCount Data Generator - Scala version
-// Generate random text data giống HiBench RandomTextWriter
+// Generate random text data similar to HiBench RandomTextWriter
 
 import org.apache.spark.sql.SparkSession
 import scala.util.Random

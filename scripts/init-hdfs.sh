@@ -1,30 +1,30 @@
 #!/bin/bash
 
-# Script khởi tạo HDFS cho HiBench
-# Chạy script này sau khi Hadoop cluster đã khởi động
+# Script to initialize HDFS for HiBench
+# Run this script after Hadoop cluster has started
 
 set -e
 
-echo "🔧 Đang khởi tạo HDFS cho HiBench..."
+echo "🔧 Initializing HDFS for HiBench..."
 
-# Chờ HDFS sẵn sàng
-echo "⏳ Chờ HDFS khởi động..."
+# Wait for HDFS to be ready
+echo "⏳ Waiting for HDFS to start..."
 sleep 10
 
-# Tạo thư mục cho HiBench
-echo "📁 Tạo thư mục HiBench trên HDFS..."
+# Create directories for HiBench
+echo "📁 Creating HiBench directories on HDFS..."
 hdfs dfs -mkdir -p /HiBench
 hdfs dfs -mkdir -p /spark-logs
 hdfs dfs -mkdir -p /user/root
 
 # Set permissions
-echo "🔒 Thiết lập quyền truy cập..."
+echo "🔒 Setting access permissions..."
 hdfs dfs -chmod -R 777 /HiBench
 hdfs dfs -chmod -R 777 /spark-logs
 hdfs dfs -chmod -R 777 /user
 
-echo "✅ Khởi tạo HDFS hoàn tất!"
+echo "✅ HDFS initialization complete!"
 echo ""
-echo "📊 Kiểm tra HDFS:"
+echo "📊 Checking HDFS:"
 hdfs dfs -ls /
 

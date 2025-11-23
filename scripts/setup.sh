@@ -1,48 +1,48 @@
 #!/bin/bash
 
-# Script setup môi trường HiBench với Hadoop và Spark
+# Script to setup HiBench environment with Hadoop and Spark
 
 set -e
 
-echo "🚀 Bắt đầu setup môi trường HiBench..."
+echo "🚀 Starting HiBench environment setup..."
 echo ""
 
-# Kiểm tra Docker
-echo "🐳 Kiểm tra Docker..."
+# Check Docker
+echo "🐳 Checking Docker..."
 if ! command -v docker &> /dev/null; then
-    echo "❌ Docker chưa được cài đặt. Vui lòng cài Docker Desktop."
+    echo "❌ Docker is not installed. Please install Docker Desktop."
     exit 1
 fi
 
 if ! docker info &> /dev/null; then
-    echo "❌ Docker daemon chưa chạy. Vui lòng khởi động Docker Desktop."
+    echo "❌ Docker daemon is not running. Please start Docker Desktop."
     exit 1
 fi
 
-echo "✅ Docker đã sẵn sàng"
+echo "✅ Docker is ready"
 echo ""
 
-# Kiểm tra Docker Compose
-echo "🔧 Kiểm tra Docker Compose..."
+# Check Docker Compose
+echo "🔧 Checking Docker Compose..."
 if ! command -v docker-compose &> /dev/null; then
-    echo "❌ Docker Compose chưa được cài đặt."
+    echo "❌ Docker Compose is not installed."
     exit 1
 fi
 
-echo "✅ Docker Compose đã sẵn sàng"
+echo "✅ Docker Compose is ready"
 echo ""
 
-# Build và start containers
-echo "🔨 Build và khởi động các containers..."
+# Build and start containers
+echo "🔨 Building and starting containers..."
 docker-compose up -d
 
 echo ""
-echo "⏳ Chờ các services khởi động (60 giây)..."
+echo "⏳ Waiting for services to start (60 seconds)..."
 sleep 60
 
-# Khởi tạo HDFS
+# Initialize HDFS
 echo ""
-echo "📁 Khởi tạo HDFS..."
+echo "📁 Initializing HDFS..."
 docker exec -it namenode bash -c "
     hdfs dfs -mkdir -p /HiBench
     hdfs dfs -mkdir -p /spark-logs
@@ -53,15 +53,15 @@ docker exec -it namenode bash -c "
 "
 
 echo ""
-echo "✅ Setup hoàn tất!"
+echo "✅ Setup complete!"
 echo ""
-echo "📊 Các Web UI có thể truy cập:"
+echo "📊 Web UIs available:"
 echo "  - Hadoop NameNode: http://localhost:9870"
 echo "  - Spark Master:     http://localhost:8080"
 echo "  - Spark Worker:     http://localhost:8081"
-echo "  - Spark App UI:     http://localhost:4040 (khi chạy job)"
+echo "  - Spark App UI:     http://localhost:4040 (when running jobs)"
 echo ""
-echo "📝 Để chạy HiBench benchmark, sử dụng:"
+echo "📝 To run HiBench benchmark, use:"
 echo "   docker exec -it spark-master bash"
 echo "   cd /hibench"
 echo ""

@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """
-Tạo dữ liệu test cho WordCount benchmark
+Generate test data for WordCount benchmark
 """
 
 import random
 import string
 
-# Sample words để generate
+# Sample words for generation
 WORDS = [
     'spark', 'hadoop', 'data', 'processing', 'big', 'analytics', 'cluster',
     'distributed', 'computing', 'mapreduce', 'yarn', 'hdfs', 'storage',
@@ -19,20 +19,20 @@ WORDS = [
 ]
 
 def generate_random_text(num_lines=10000, words_per_line=15):
-    """Generate random text với word frequency theo Zipfian-like distribution"""
+    """Generate random text with word frequency following Zipfian-like distribution"""
     lines = []
     
-    # Tạo weights cho Zipfian distribution (frequent words xuất hiện nhiều hơn)
+    # Create weights for Zipfian distribution (frequent words appear more often)
     weights = [1.0/(i+1) for i in range(len(WORDS))]
     
     for _ in range(num_lines):
-        # Random số từ per line
+        # Random number of words per line
         num_words = random.randint(words_per_line - 5, words_per_line + 5)
         
-        # Chọn words theo weighted distribution
+        # Select words according to weighted distribution
         line_words = random.choices(WORDS, weights=weights, k=num_words)
         
-        # Capitalize một số từ ngẫu nhiên
+        # Capitalize some random words
         line_words = [w.capitalize() if random.random() < 0.1 else w for w in line_words]
         
         lines.append(' '.join(line_words))

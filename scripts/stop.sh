@@ -1,16 +1,16 @@
 #!/bin/bash
 
-# Script dừng và dọn dẹp môi trường
+# Script to stop and clean up environment
 
 set -e
 
-echo "🛑 Đang dừng các containers..."
+echo "🛑 Stopping containers..."
 docker-compose down
 
 echo ""
-echo "🧹 Dọn dẹp hoàn tất!"
+echo "🧹 Cleanup complete!"
 echo ""
-echo "💡 Để xóa hoàn toàn volumes (dữ liệu HDFS), chạy:"
+echo "💡 To completely remove volumes (HDFS data), run:"
 echo "   docker-compose down -v"
 echo ""
 

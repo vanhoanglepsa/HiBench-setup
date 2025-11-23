@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# Script kiểm tra trạng thái hệ thống
+# Script to check system status
 
-echo "📊 Trạng thái containers:"
+echo "📊 Container status:"
 echo ""
 docker-compose ps
 

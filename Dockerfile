@@ -1,5 +1,5 @@
-# Dockerfile cho HiBench với Hadoop và Spark
-# Tối ưu cho MacBook M3 (ARM64)
+# Dockerfile for HiBench with Hadoop and Spark
+# Optimized for MacBook M3 (ARM64)
 
 FROM --platform=linux/arm64/v8 openjdk:8-jdk-slim
 
@@ -59,7 +59,7 @@ RUN git clone https://github.com/Intel-bigdata/HiBench.git ${HIBENCH_HOME}
 
 WORKDIR ${HIBENCH_HOME}
 
-# Build HiBench (chỉ build Hadoop và Spark workloads)
+# Build HiBench (only build Hadoop and Spark workloads)
 RUN mvn -Phadoopbench -Psparkbench -Dscala=${SCALA_VERSION} -Dspark=${SPARK_VERSION} clean package
 
 # Expose ports
