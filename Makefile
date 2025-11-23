@@ -113,14 +113,10 @@ clean:
 		echo "❌ Cancelled"; \
 	fi
 
-# Test with WordCount benchmark
+# Test with WordCount benchmark (Official HiBench)
 test:
-	@echo "🧪 Running WordCount benchmark test..."
-	docker exec -it spark-master bash -c "cd /opt/hibench && \
-		cp /hibench/*.conf conf/ && \
-		bin/workloads/micro/wordcount/prepare/prepare.sh && \
-		bin/workloads/micro/wordcount/spark/run.sh && \
-		cat report/hibench.report"
+	@echo "🧪 Running Official HiBench WordCount benchmark test..."
+	@bash test/hibench-official-wordcount.sh
 
 # Quick test (only check connectivity)
 test-quick:

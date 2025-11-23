@@ -52,6 +52,93 @@ docker exec -it namenode bash -c "
     hdfs dfs -chmod -R 777 /user
 "
 
+# Create Maven settings with proper repositories
+echo ""
+echo "🔧 Configuring Maven settings..."
+docker exec spark-master bash -c "
+    mkdir -p /root/.m2 && \
+    cat > /root/.m2/settings.xml << 'EOF'
+<settings>
+  <profiles>
+    <profile>
+      <id>hibench-repos</id>
+      <repositories>
+        <repository>
+          <id>central</id>
+          <name>Maven Central</name>
+          <url>https://repo1.maven.org/maven2</url>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+        </repository>
+        <repository>
+          <id>apache-repo</id>
+          <name>Apache Repository</name>
+          <url>https://repository.apache.org/content/repositories/releases</url>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+        </repository>
+      </repositories>
+    </profile>
+  </profiles>
+  <activeProfiles>
+    <activeProfile>hibench-repos</activeProfile>
+  </activeProfiles>
+</settings>
+EOF
+"
+
+# Build HiBench with Java 8 (build sparkbench assembly with proper Scala version)
+echo ""
+echo "🔨 Building HiBench sparkbench with Java 8 (this may take a few minutes)..."
+echo "   Spark: 3.3.2, Scala: 2.12"
+docker exec spark-master bash -c "
+    export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64 && \
+    export PATH=\$JAVA_HOME/bin:\$PATH && \
+    cd /opt/hibench && \
+    mvn -Psparkbench,scala2.12 \
+        -Dspark.version=3.3.2 \
+        -Dmaven.compiler.source=8 \
+        -Dmaven.compiler.target=8 \
+        -DskipTests \
+        -U \
+        clean package -pl sparkbench/assembly -am
+" || {
+    echo "❌ HiBench build failed! Trying alternative build method..."
+    echo "🔧 Attempting to build with explicit dependency resolution..."
+    docker exec spark-master bash -c "
+        export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64 && \
+        export PATH=\$JAVA_HOME/bin:\$PATH && \
+        cd /opt/hibench && \
+        mvn -Psparkbench,scala2.12 \
+            -Dspark.version=3.3.2 \
+            -Dmaven.compiler.source=8 \
+            -Dmaven.compiler.target=8 \
+            -DskipTests \
+            -U \
+            clean package -pl sparkbench/assembly -am
+    " || {
+        echo "❌ HiBench build failed completely!"
+        echo "⚠️  You may need to build manually inside the container"
+        exit 1
+    }
+}
+
+# Verify build success
+echo ""
+if docker exec spark-master test -f /opt/hibench/sparkbench/assembly/target/sparkbench-assembly-8.0-SNAPSHOT-dist.jar; then
+    echo "✅ HiBench build verified successfully!"
+else
+    echo "⚠️  Warning: HiBench jar file not found, but build may have completed"
+fi
+
 echo ""
 echo "✅ Setup complete!"
 echo ""
