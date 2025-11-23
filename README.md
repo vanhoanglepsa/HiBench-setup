@@ -11,6 +11,9 @@ make setup
 # Start containers
 make start
 
+#check-job
+make check-job  
+
 # Run WordCount benchmark test
 make test
 ```
@@ -18,6 +21,7 @@ make test
 ## 📋 Main Commands
 
 ### Container Management
+
 ```bash
 make start        # Start containers
 make stop         # Stop containers
@@ -27,6 +31,7 @@ make clean        # Remove everything (including data)
 ```
 
 ### Development
+
 ```bash
 make shell-spark   # Enter Spark Master container
 make shell-hadoop  # Enter Hadoop NameNode container
@@ -36,6 +41,7 @@ make test          # Test WordCount benchmark
 ## 🏆 Run Benchmarks
 
 ### MICRO Benchmarks
+
 ```bash
 make wordcount     # WordCount
 make sort          # Sort
@@ -46,6 +52,7 @@ make dfsioe-write  # DFSIOE Write
 ```
 
 ### MACHINE LEARNING
+
 ```bash
 make kmeans        # K-Means
 make bayes         # Naive Bayes
@@ -63,6 +70,7 @@ make svd           # SVD
 ```
 
 ### SQL
+
 ```bash
 make scan          # Scan
 make join          # Join
@@ -70,17 +78,20 @@ make aggregation   # Aggregation
 ```
 
 ### WEB SEARCH
+
 ```bash
 make pagerank      # PageRank
 make nutchindexing # Nutch Indexing
 ```
 
 ### GRAPH
+
 ```bash
 make nweight       # N-Weight
 ```
 
 ### STREAMING
+
 ```bash
 make identity              # Identity
 make repartition-streaming # Repartition Streaming
